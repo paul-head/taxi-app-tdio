@@ -22,7 +22,7 @@ from trips.views import SignUpView, LogInView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/sing_up/', SignUpView.as_view(), name='sing_up'),
+    path('api/sign_up/', SignUpView.as_view(), name='sing_up'),
     path('api/log_in/', LogInView.as_view(), name='log_in'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
