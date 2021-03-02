@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from trips.serializers import TripSerializer, UserSerializer
+from trips.models import Trip
 
 
 PASSWORD = 'pAssw0rd!'
@@ -53,3 +55,27 @@ class AuthenticationTest(APITestCase):
         self.assertEqual(payload_data['id'], user.id)
         self.assertEqual(payload_data['first_name'], user.first_name)
         self.assertEqual(payload_data['last_name'], user.last_name)
+
+
+class HttpTripTest(APITestCase):
+    def setUp(self):
+        user = create_user()
+        responce = self.client.post(reverse('log_in'), data={
+            'username': user.username,
+            'password': PASSWORD,
+        })
+        self.accecc = responce.data['access']
+
+    def test_user_can_list_trips(self):
+        trips = [
+            Trip.objects.create(pick_up_address='A', drop_off_adress='B'),
+            Trip.objects.create(pick_up_address='B', drop_off_adress='C'),
+        ]
+        responce = self.client.get(
+            reverse('trip:trip_list'),
+            HTTP_AUTHORIZATION=f'Bearer {self.accecc}'
+        )
+        self.assertEqual(status.HTTP_200_OK. responce.status_code)
+        exp_trip_ids = [str(trip.id) for trip in trips]
+        act_trip_ids = [trip.get('id') for trip in responce.data]
+        self.assertCountEqual(exp_trip_ids, act_trip_ids)
