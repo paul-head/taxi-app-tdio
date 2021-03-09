@@ -64,18 +64,18 @@ class HttpTripTest(APITestCase):
             'username': user.username,
             'password': PASSWORD,
         })
-        self.accecc = responce.data['access']
+        self.access = responce.data['access']
 
     def test_user_can_list_trips(self):
         trips = [
-            Trip.objects.create(pick_up_address='A', drop_off_adress='B'),
-            Trip.objects.create(pick_up_address='B', drop_off_adress='C'),
+            Trip.objects.create(pick_up_address='A', drop_off_address='B'),
+            Trip.objects.create(pick_up_address='B', drop_off_address='C'),
         ]
         responce = self.client.get(
             reverse('trip:trip_list'),
-            HTTP_AUTHORIZATION=f'Bearer {self.accecc}'
+            HTTP_AUTHORIZATION=f'Bearer {self.access}'
         )
-        self.assertEqual(status.HTTP_200_OK. responce.status_code)
+        self.assertEqual(status.HTTP_200_OK, responce.status_code)
         exp_trip_ids = [str(trip.id) for trip in trips]
         act_trip_ids = [trip.get('id') for trip in responce.data]
         self.assertCountEqual(exp_trip_ids, act_trip_ids)
